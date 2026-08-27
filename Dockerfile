@@ -13,17 +13,17 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/dlx .
 
 # ==============================================================================
-# Final Stage: Lightweight production runtime with yt-dlp standalone and ffmpeg
+# Final Stage: Lightweight glibc runtime (Debian slim) with standalone yt-dlp & ffmpeg
 # ==============================================================================
-FROM alpine:3.21
+FROM debian:bookworm-slim
 
-# Install runtime dependencies (ffmpeg, ca-certificates for HTTPS, curl for healthcheck & downloads)
-RUN apk add --no-cache \
+# Install runtime dependencies (ffmpeg, ca-certificates, curl, tzdata)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     ffmpeg \
-    tzdata \
     curl \
-    libc6-compat
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 # Download official standalone yt-dlp binary based on target architecture
 ARG TARGETARCH
