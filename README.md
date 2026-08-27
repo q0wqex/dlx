@@ -59,7 +59,7 @@ dlx/
 │   ├── style.css         # Тёмная тема и адаптивные стили
 │   └── app.js            # Логика клиента (Clipboard API, SSE, localStorage)
 ├── Dockerfile            # Multi-stage сборка с официальным standalone yt-dlp и ffmpeg
-├── compose.yml           # Docker Compose манифест с привязкой к 127.0.0.1:8080
+├── docker-compose.yml   # Docker Compose манифест с привязкой к 127.0.0.1:8080
 ├── nginx.conf.example    # Пример конфигурации Nginx для dl.q0wqex.ru
 └── README.md             # Документация проекта
 ```
@@ -103,7 +103,7 @@ docker compose up -d
 
 ## Переменные окружения
 
-Конфигурация задаётся через переменные окружения в `compose.yml` или системном `.env`:
+Конфигурация задаётся через переменные окружения в `docker-compose.yml` или системном `.env`:
 
 | Переменная | По умолчанию | Описание |
 | :--- | :--- | :--- |
