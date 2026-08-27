@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="DLX — быстрый и минималистичный персональный видео-загрузчик на базе yt-dlp.">
+  <meta name="theme-color" content="#0a0c10">
+  <title>DLX</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-glow"></div>
+
+  <main class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="logo">DLX</h1>
+      <p class="subtitle">Video downloader</p>
+    </header>
+
+    <!-- Main Input Section -->
+    <section class="downloader-card">
+      <form id="downloadForm" class="download-form" autocomplete="off" onsubmit="return false;">
+        <div class="input-wrapper">
+          <input 
+            type="url" 
+            id="urlInput" 
+            class="url-input" 
+            placeholder="Вставь ссылку на видео..." 
+            aria-label="Ссылка на видео"
+            required
+            spellcheck="false"
+            autocapitalize="none"
+          >
+          <button 
+            type="button" 
+            id="pasteBtn" 
+            class="btn-paste" 
+            title="Вставить из буфера обмена"
+            aria-label="Вставить из буфера"
+          >
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span class="btn-paste-text">Вставить</span>
+          </button>
+        </div>
+
+        <button type="submit" id="downloadBtn" class="btn-primary">
+          <span class="btn-text">Скачать видео</span>
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+      </form>
+
+      <!-- Settings Accordion Toggle -->
+      <button type="button" id="settingsToggle" class="btn-settings-toggle" aria-expanded="false">
+        <svg class="icon gear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Настройки</span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+
+      <!-- Settings Panel (Collapsible) -->
+      <div id="settingsPanel" class="settings-panel hidden">
+        <div class="settings-grid">
+          <!-- Format Option -->
+          <div class="setting-item">
+            <label class="setting-label" for="settingFormat">Формат</label>
+            <div class="segmented-control" id="formatSelector">
+              <button type="button" class="segment-btn active" data-value="mp4">MP4</button>
+              <button type="button" class="segment-btn" data-value="mp3">MP3</button>
+            </div>
+          </div>
+
+          <!-- Quality Option -->
+          <div class="setting-item" id="qualitySettingWrapper">
+            <label class="setting-label" for="qualitySelect">Качество</label>
+            <select id="qualitySelect" class="select-control">
+              <option value="best" selected>Лучшее (авто)</option>
+              <option value="2160">2160p (4K)</option>
+              <option value="1440">1440p (2K)</option>
+              <option value="1080">1080p (Full HD)</option>
+              <option value="720">720p (HD)</option>
+              <option value="480">480p</option>
+              <option value="360">360p</option>
+            </select>
+          </div>
+
+          <!-- Subtitles Option -->
+          <div class="setting-item" id="subtitlesSettingWrapper">
+            <label class="setting-label checkbox-label">
+              <input type="checkbox" id="subtitlesCheckbox" class="checkbox-control">
+              <span>Субтитры</span>
+            </label>
+            <input 
+              type="text" 
+              id="subtitlesLangInput" 
+              class="text-control" 
+              placeholder="Языки (напр. ru,en)" 
+              value="ru,en"
+              disabled
+            >
+          </div>
+
+          <!-- Thumbnail Option -->
+          <div class="setting-item">
+            <label class="setting-label checkbox-label">
+              <input type="checkbox" id="thumbnailCheckbox" class="checkbox-control">
+              <span>Встроить обложку</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Information Card (Fetched Metadata) -->
+    <section id="infoCard" class="info-card hidden">
+      <div class="info-thumbnail-wrap">
+        <img id="infoThumbnail" src="" alt="Thumbnail" class="info-thumbnail" loading="lazy">
+        <span id="infoDuration" class="info-duration">00:00</span>
+      </div>
+      <div class="info-details">
+        <h2 id="infoTitle" class="info-title">Загрузка информации...</h2>
+        <div class="info-meta">
+          <span id="infoSite" class="info-badge">YouTube</span>
+          <span id="infoQualityBadge" class="info-quality">1080p</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Status & Progress Section -->
+    <section id="statusCard" class="status-card hidden">
+      <!-- Loading State (Fetching metadata) -->
+      <div id="loadingState" class="state-block hidden">
+        <div class="spinner"></div>
+        <p class="state-message">Получение информации о видео...</p>
+      </div>
+
+      <!-- Downloading State -->
+      <div id="downloadingState" class="state-block hidden">
+        <div class="progress-header">
+          <span id="progressStage" class="progress-stage">Скачивание...</span>
+          <span id="progressPercent" class="progress-percent">0%</span>
+        </div>
+
+        <div class="progress-bar-track">
+          <div id="progressBarFill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+
+        <div class="progress-footer">
+          <span id="progressSpeed" class="progress-stat">-</span>
+          <span class="progress-dot">•</span>
+          <span id="progressEta" class="progress-stat">-</span>
+        </div>
+      </div>
+
+      <!-- Completed State -->
+      <div id="completedState" class="state-block hidden">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <p class="completed-title">Скачивание завершено</p>
+        <p id="completedFileName" class="completed-filename">video.mp4</p>
+        <p id="completedFileSize" class="completed-filesize">0 MB</p>
+
+        <a id="saveFileBtn" class="btn-primary btn-save" href="#" download>
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Сохранить файл</span>
+        </a>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="state-block hidden">
+        <div class="error-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <p id="errorMessage" class="error-message">Произошла ошибка</p>
+        <button type="button" id="retryBtn" class="btn-secondary">Попробовать снова</button>
+      </div>
+    </section>
+
+    <!-- Toast Notification for Clipboard / Quick alerts -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

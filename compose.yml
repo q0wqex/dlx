@@ -1,0 +1,15 @@
+services:
+  dlx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dlx
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - PORT=8080
+      - MAX_CONCURRENT_DOWNLOADS=2
+      - MAX_FILE_SIZE=5G
+      - DOWNLOAD_TIMEOUT=30m
+      - TEMP_DIR=/tmp/dlx
