@@ -25,14 +25,14 @@
 ```
 Internet
    ↓
-Nginx (network_mode: host, TLS dl.q0wqex.ru)
+Nginx (network_mode: host, TLS dl.example.com)
    ↓
-http://127.0.0.1:8080
+http://127.0.0.1:8888
    ↓
-DLX (Docker-контейнер, loopback порт 127.0.0.1:8080)
+DLX (Docker-контейнер, loopback порт 127.0.0.1:8888)
 ```
 
-DLX слушает только локальный интерфейс хоста (`127.0.0.1:8080`), а внешний Nginx отвечает за HTTPS и проксирование.
+DLX слушает локальный интерфейс хоста (`127.0.0.1:8888`), а внешний Nginx отвечает за HTTPS и проксирование.
 
 ---
 
@@ -59,8 +59,8 @@ dlx/
 │   ├── style.css         # Тёмная тема и адаптивные стили
 │   └── app.js            # Логика клиента (Clipboard API, SSE, localStorage)
 ├── Dockerfile            # Multi-stage сборка с официальным standalone yt-dlp и ffmpeg
-├── docker-compose.yml   # Docker Compose манифест с привязкой к 127.0.0.1:8080
-├── nginx.conf.example    # Пример конфигурации Nginx для dl.q0wqex.ru
+├── docker-compose.yml   # Docker Compose манифест с привязкой к 127.0.0.1:8888
+├── nginx.conf.example    # Пример конфигурации Nginx для dl.example.com
 └── README.md             # Документация проекта
 ```
 
@@ -79,12 +79,12 @@ cd dlx
 docker compose up -d --build
 ```
 
-Контейнер автоматически скачает официальный бинарник `yt-dlp` под архитектуру сервера (amd64 / arm64), скомпилирует Go-сервер и запустится на `127.0.0.1:8080`.
+Контейнер автоматически скачает официальный бинарник `yt-dlp` под архитектуру сервера (amd64 / arm64), скомпилирует Go-сервер и запустится на `127.0.0.1:8888`.
 
 ### 3. Проверка работоспособности
 
 ```bash
-curl http://127.0.0.1:8080/health
+curl http://127.0.0.1:8888/health
 # Ответ: {"status":"ok"}
 ```
 
@@ -124,15 +124,15 @@ docker compose up -d
 ```nginx
 server {
     listen 443 ssl http2;
-    server_name dl.q0wqex.ru;
+    server_name dl.example.com;
 
-    ssl_certificate /etc/letsencrypt/live/dl.q0wqex.ru/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/dl.q0wqex.ru/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/dl.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/dl.example.com/privkey.pem;
 
     client_max_body_size 5000M;
 
     location / {
-        proxy_pass http://127.0.0.1:8080;
+        proxy_pass http://127.0.0.1:8888;
         
         proxy_http_version 1.1;
         proxy_set_header Connection '';
